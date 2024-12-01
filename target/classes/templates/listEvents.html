@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Booking - Welcome and Choose an Event</title>
+</head>
+<body>
+<main>
+  <section>
+    <form class="add" action="/events/add" method="get">
+      <button type="submit">Add New Event</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Search for an Event:</h2>
+    <form action="/events/search" method="post">
+      <input type="text" name="searchText" placeholder="Search events" aria-label="Search events"
+             th:value="${searchText}" />
+      <label for="location">Locations</label>
+      <select id="location" name="locationId">
+        <option value=""></option>
+        <th:block th:each="location : ${locations}">
+          <option th:value="${location.id}" th:text="${location.name}"></option>
+        </th:block>
+      </select>
+      <button type="submit">Search</button>
+    </form>
+
+  </section>
+
+  <section>
+    <h2>Choose an Event:</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Select</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Rating</th>
+        <th>Location</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="event : ${events}">
+        <td>
+          <input type="radio" name="eventName" th:value="${event.id}" onchange="updateSelectedEvent(this.value)" required aria-label="Select event: ${event.name}">
+        </td>
+        <td>
+          <span th:text="${event.name}"></span>
+        </td>
+        <td>
+          <span th:text="${event.description}"></span>
+        </td>
+        <td>
+          <span th:text="${event.popularityScore}"></span>
+        </td>
+        <td>
+          <span th:text="${event.location.name}"></span>
+        </td>
+        <td>
+          <a th:href="@{'/events/edit/{id}' (id=${event.getId()})}" class="edit">Edit</a>
+          <form class="delete" th:method="DELETE" th:action="@{'/events/delete/{id}' (id=${event.getId()})}" style="display: inline;">
+            <button type="submit" class="delete">Delete</button>
+          </form>
+          <form th:if="${!event.isLiked()}" class="like" th:method="post" th:action="@{'/events/like/{id}' (id=${event.getId()})}" style="display: inline;">
+            <button type="submit" class="like">Like</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+
+    <form th:action="@{/eventsBookings/book}" method="post">
+
+      <input type="hidden" id="selectedEventId" name="selectedEventId" />
+
+      <section>
+        <h2>Your Details:</h2>
+        <label for="attendeeName">Name:</label>
+        <input type="text" id="attendeeName" name="attendeeName" required aria-label="Enter your name">
+      </section>
+
+      <section>
+        <h2>Choose Number of Tickets:</h2>
+        <input type="number" name="numTickets" min="1" max="10" required aria-label="Select number of tickets" />
+      </section>
+
+      <input type="submit" value="Submit Booking">
+    </form>
+  </section>
+</main>
+
+<script>
+  function updateSelectedEvent(eventId) {
+    document.getElementById("selectedEventId").value = eventId;
+  }
+</script>
+</body>
+</html>
