@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,11 @@
     <form class="add" action="/events/add" method="get">
       <button type="submit">Add New Event</button>
     </form>
+    <a sec:authorize="isAuthenticated()" href="/logout">
+      <i ></i> Logout
+    </a>
+
+
   </section>
 
   <section>
@@ -61,10 +66,12 @@
           <span th:text="${event.location.name}"></span>
         </td>
         <td>
+          <th:block sec:authorize="hasRole('ADMIN')">
           <a th:href="@{'/events/edit/{id}' (id=${event.getId()})}" class="edit">Edit</a>
           <form class="delete" th:method="DELETE" th:action="@{'/events/delete/{id}' (id=${event.getId()})}" style="display: inline;">
             <button type="submit" class="delete">Delete</button>
           </form>
+          </th:block>
           <form th:if="${!event.isLiked()}" class="like" th:method="post" th:action="@{'/events/like/{id}' (id=${event.getId()})}" style="display: inline;">
             <button type="submit" class="like">Like</button>
           </form>
